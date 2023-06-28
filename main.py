@@ -23,30 +23,20 @@ def getmachine_data():
     return machine_data
 
 def getmachineinfo(opt_pos_arg: int, arr: []):
-    match opt_pos_arg:
-        case 7:
-            return arr[0]
 
-        case 8:
-            return arr[1]
+    if opt_pos_arg > 0 and opt_pos_arg < 9:
+        match opt_pos_arg:
+            case 7:
+                return arr[0]
 
-        case 1:
-            return arr[2]
+            case 8:
+                return arr[1]
 
-        case 2:
-            return arr[3]
-
-        case 3:
-            return arr[4]
-
-        case 4:
-            return arr[5]
-
-        case 5:
-            return arr[6]
-
-        case 6:
-            return arr[7]
+            case _:
+                return arr[opt_pos_arg +1]
+        
+    else:
+        return "No machine with number %d" % opt_pos_arg
 
 
 def ansiprint(string: str):
