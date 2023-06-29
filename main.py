@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 import argparse
 import time
+import subprocess
+import os
 
 url = "http://83.151.134.6/Status.asp"
 global data
@@ -64,7 +66,24 @@ def getparsed_arr():
     del arr[len(arr) - 2:]
     return arr
 
+def ring_bell(termux: bool):
+    if termux:
+        os.popen('termux-vibrate')
+    else:
+        print('\a')
+
+
+
 arr = getparsed_arr()
+
+# Check if running in termux environment
+termux = False
+res = os.popen('command -v termux-setup-storage')
+
+if (len(res.read()) > 0):
+   termux = True
+res.close()
+
 
 if args.machine_num is not None and args.follow == False:
     ansiprint(getmachineinfo(args.machine_num, arr))
@@ -91,8 +110,16 @@ elif args.machine_num is not None and args.follow == True:
 
                 if info.count("Fri") > 0:
                     ansiprint(info)
-                    print('\a')
-                    finished = True
+                    last_time = time.thread_time()
+                    ring_bell(termux)
+                    while not finished:
+                        time_diff = time.thread_time() - last_time
+                        if (time_diff >= 1):
+                            ring_bell(termux)
+                            count += 1
+                            last_time = time.thread_time()
+                            if (count >= 2):
+                                finished = True
 
 
 elif args.machine_num is None and args.follow == True:
@@ -101,3 +128,17 @@ elif args.machine_num is None and args.follow == True:
 else:
     for x in arr:
         ansiprint(x)
+
+    finished = False
+    count = 0
+    last_time = time.thread_time()
+    ring_bell(termux)
+    while not finished:
+        time_diff = time.thread_time() - last_time
+        if (time_diff >= 1):
+            ring_bell(termux)
+            count += 1
+            last_time = time.thread_time()
+            if (count >= 2):
+                finished = True
+            
