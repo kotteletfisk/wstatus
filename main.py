@@ -127,5 +127,4 @@ else:
     for x in arr:
         ansiprint(x)
         
-    ring_bell(check_termux(), 2)
         
