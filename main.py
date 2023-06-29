@@ -76,6 +76,7 @@ elif args.machine_num is not None and args.follow == True:
         print("Cannot follow. Machine not in use!")
 
     else:
+        print("Following machine %d" % args.machine_num)
         finished = False
         last_time = time.thread_time()
         while not finished:
