@@ -16,7 +16,7 @@ parser.add_argument('machine_num', type=int, nargs='?', help='Specify machine nu
 parser.add_argument('-f', action='store_true', dest='follow', help='Use "-f" flag to ring terminal bell when active machine is finished')
 args = parser.parse_args()
 
-def getmachine_data():
+def getmachine_data() -> [str]:
     data = requests.get(url)
     html = BeautifulSoup(data.text, "html.parser")
     machine_data = html.select('TD.noborder')
@@ -24,8 +24,7 @@ def getmachine_data():
     machine_data = machine_data[2:]
     return machine_data
 
-def getmachineinfo(opt_pos_arg: int, arr: []):
-
+def getmachineinfo(opt_pos_arg: int, arr: [str]) -> str:
     if opt_pos_arg > 0 and opt_pos_arg < 9:
         match opt_pos_arg:
             case 7:
@@ -48,7 +47,7 @@ def ansiprint(string: str):
     string = string.replace("Lukket", " \033[31mLukket\033[0m") 
     print(string)
 
-def getparsed_arr():
+def getparsed_arr() -> [str]:
     machine_data = getmachine_data() 
     arr = []
     i = 0
@@ -69,32 +68,28 @@ def getparsed_arr():
 def ring_bell(termux: bool, num: int):
     if termux:
         os.popen(f'termux-notification -t "Machine {num} has finished" --vibrate 500')
-
     else:
-        finished = False
+        ringing = True
         count = 0
         last_time = time.thread_time()
-        while not finished:
+        while ringing:
             time_diff = time.thread_time() - last_time
             if (time_diff >= 1):
                 print('\a')
                 count += 1
                 last_time = time.thread_time()
                 if (count >= 3):
-                    finished = True
+                    ringing = False
 
-
+def check_termux() -> bool:
+    termux = False
+    res = os.popen('command -v termux-setup-storage')
+    if (len(res.read()) > 0):
+        termux = True
+    res.close()
+    return termux
 
 arr = getparsed_arr()
-
-# Check if running in termux environment
-termux = False
-res = os.popen('command -v termux-setup-storage')
-
-if (len(res.read()) > 0):
-   termux = True
-res.close()
-
 
 # Run branch based on arguments
 if args.machine_num is not None and args.follow == False:
@@ -108,6 +103,7 @@ elif args.machine_num is not None and args.follow == True:
 
     else:
         print(f'Following machine {args.machine_num}')
+        termux = check_termux()
         finished = False
         last_time = time.thread_time()
         while not finished:
