@@ -103,7 +103,6 @@ elif args.machine_num is not None and args.follow == True:
 
     else:
         print(f'Following machine {args.machine_num}')
-        termux = check_termux()
         finished = False
         last_time = time.thread_time()
         while not finished:
@@ -118,7 +117,7 @@ elif args.machine_num is not None and args.follow == True:
 
                 if info.count("Fri") > 0:
                     ansiprint(info)
-                    ring_bell(termux, args.machine_num)
+                    ring_bell(check_termux(), args.machine_num)
                     finished = True
 
 elif args.machine_num is None and args.follow == True:
@@ -127,4 +126,6 @@ elif args.machine_num is None and args.follow == True:
 else:
     for x in arr:
         ansiprint(x)
+        
+    ring_bell(check_termux(), 2)
         
