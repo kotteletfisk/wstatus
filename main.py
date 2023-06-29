@@ -66,11 +66,22 @@ def getparsed_arr():
     del arr[len(arr) - 2:]
     return arr
 
-def ring_bell(termux: bool):
+def ring_bell(termux: bool, num: int):
     if termux:
-        os.popen('termux-vibrate')
+        os.popen(f'termux-notification -t "Machine {num} has finished" --vibrate 500')
+
     else:
-        print('\a')
+        finished = False
+        count = 0
+        last_time = time.thread_time()
+        while not finished:
+            time_diff = time.thread_time() - last_time
+            if (time_diff >= 1):
+                print('\a')
+                count += 1
+                last_time = time.thread_time()
+                if (count >= 3):
+                    finished = True
 
 
 
@@ -85,6 +96,7 @@ if (len(res.read()) > 0):
 res.close()
 
 
+# Run branch based on arguments
 if args.machine_num is not None and args.follow == False:
     ansiprint(getmachineinfo(args.machine_num, arr))
 
@@ -95,7 +107,7 @@ elif args.machine_num is not None and args.follow == True:
         print("Cannot follow. Machine not in use!")
 
     else:
-        print("Following machine %d" % args.machine_num)
+        print(f'Following machine {args.machine_num}')
         finished = False
         last_time = time.thread_time()
         while not finished:
@@ -110,17 +122,8 @@ elif args.machine_num is not None and args.follow == True:
 
                 if info.count("Fri") > 0:
                     ansiprint(info)
-                    last_time = time.thread_time()
-                    ring_bell(termux)
-                    while not finished:
-                        time_diff = time.thread_time() - last_time
-                        if (time_diff >= 1):
-                            ring_bell(termux)
-                            count += 1
-                            last_time = time.thread_time()
-                            if (count >= 2):
-                                finished = True
-
+                    ring_bell(termux, args.machine_num)
+                    finished = True
 
 elif args.machine_num is None and args.follow == True:
     print("No machine specified to follow!")
@@ -128,17 +131,6 @@ elif args.machine_num is None and args.follow == True:
 else:
     for x in arr:
         ansiprint(x)
-
-    finished = False
-    count = 0
-    last_time = time.thread_time()
-    ring_bell(termux)
-    while not finished:
-        time_diff = time.thread_time() - last_time
-        if (time_diff >= 1):
-            ring_bell(termux)
-            count += 1
-            last_time = time.thread_time()
-            if (count >= 2):
-                finished = True
+    
+    ring_bell(termux, 8) #TODO: REMOVE
             
