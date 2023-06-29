@@ -131,6 +131,4 @@ elif args.machine_num is None and args.follow == True:
 else:
     for x in arr:
         ansiprint(x)
-    
-    ring_bell(termux, 8) #TODO: REMOVE
-            
+        
