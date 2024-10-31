@@ -23,6 +23,10 @@ fi
 shell=$(basename "$SHELL")
 str="alias wstatus='python $(pwd)/main.py'"
 
+if [ ! -f ~/.${shell}rc ]; then
+    touch ~/.${shell}rc
+fi
+
 if grep -q "${str}" ~/.${shell}rc; then
     echo "wstatus alias already exists in ~/.${shell}rc"
     exit
