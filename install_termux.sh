@@ -5,10 +5,22 @@ if (( $(id -u) == 0 )); then
     exit
 fi
 
+
+pkg install python
+
+if [[ $? -ne 0 ]]; then
+    echo "Failed to install python"
+    exit
+fi
+
+pip install bs4 requests
+
+if [[ $? -ne 0 ]]; then
+    echo "Failed to install python packages"
+    exit
+fi
+
 shell=$(basename "$SHELL")
-
-sudo pacman -S --noconfirm python python-beautifulsoup4 python-requests
-
 str="alias wstatus='python $(pwd)/main.py'"
 
 if grep -q "${str}" ~/.${shell}rc; then
